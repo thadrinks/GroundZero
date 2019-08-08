@@ -12,14 +12,6 @@ RUN mkdir -p $INSTALL_PATH
 # Change directory so that our commands run inside this new directory
 WORKDIR $INSTALL_PATH
 
-# Comment out if starting a new project
-###################################################
-#COPY $APP_PATH/package.json $APP_PATH/yarn.lock ./
-###################################################
-
-# Install dependencies (yarn installed from node image)
-#RUN yarn install
-
 # Install global packages with local user
 USER $LOCAL_USER
 
