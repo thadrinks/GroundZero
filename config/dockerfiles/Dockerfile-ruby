@@ -1,4 +1,4 @@
-# rails new famoustitle --skip-yarn --skip-git --skip-action-cable --skip-coffee --skip-turbolinks --skip-test --skip-system-test --api
+# rails new appname --skip-yarn --skip-git --skip-action-cable --skip-coffee --skip-turbolinks --skip-test --skip-system-test --api
 
 FROM ruby:2.5.0
 RUN apt-get update -qq && apt-get install -y build-essential nodejs vim sudo

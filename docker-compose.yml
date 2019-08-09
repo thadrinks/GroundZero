@@ -33,4 +33,17 @@ services:
     stdin_open: true
     tty: true
 #   to run with byebug:
-#   docker-compose up -d && docker attach famoustitleapp_api-rails_1
+#   docker-compose up -d && docker attach grounzero_api-rails_1
+  db-postgres:
+    image: postgres:12
+    restart: always
+    volumes:
+      - ./services/pgdata:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=rails
+      - POSTGRES_PASSWORD=rails
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
