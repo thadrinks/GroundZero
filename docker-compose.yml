@@ -28,22 +28,30 @@ services:
       - ./config/environments/.aws.env
     volumes:
       - ./services/api-rails:/app
+    depends_on:
+      - db-postgres
     command:
       - ./docker-compose-start.sh
     stdin_open: true
     tty: true
-#   to run with byebug:
-#   docker-compose up -d && docker attach grounzero_api-rails_1
+  #   to run with byebug:
+  #   docker-compose up -d && docker attach groundzero_api-rails_1
   db-postgres:
     image: postgres:12
     restart: always
     volumes:
-      - ./services/pgdata:/var/lib/postgresql/data
+      - db_data:/var/lib/postgresql/data
     environment:
       - POSTGRES_USER=rails
       - POSTGRES_PASSWORD=rails
-  adminer:
-    image: adminer
-    restart: always
+  db-admin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "user@email.com"
+      PGADMIN_DEFAULT_PASSWORD: "hogehoge"
     ports:
-      - 8080:8080
+      - 4000:80
+    depends_on:
+      - db-postgres
+volumes:
+  db_data:
