@@ -1,0 +1,7 @@
+adapter: mysql2
+encoding: utf8
+database: qcommerce_drinks_com_qa
+pool: 5
+username: qcommerce_user
+password: 5J%cDy&J%E
+host: web-qa.csauhg4jpqcr.us-west-2.rds.amazonaws.com

@@ -25,7 +25,6 @@ services:
       - '3001:3000'
     env_file:
       - ./config/environments/.development.env
-      - ./config/environments/.aws.env
     volumes:
       - ./services/api-rails:/app
     depends_on:
@@ -36,6 +35,18 @@ services:
     tty: true
   #   to run with byebug:
   #   docker-compose up -d && docker attach groundzero_api-rails_1
+  lambda-ruby:
+    build:
+      context: .
+      dockerfile: ./config/dockerfiles/Dockerfile-lambda-ruby
+      args:
+        SERVICE_PATH: ./services/lambda-ruby
+    ports:
+      - '3002:3000'
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./services/lambda-ruby:/lambda-ruby
+    command: sam local start-api --docker-volume-basedir "$PWD/services/lambda-ruby" --host 0.0.0.0
   db-postgres:
     image: postgres:12
     restart: always
