@@ -25,7 +25,6 @@ services:
       - '3001:3000'
     env_file:
       - ./config/environments/.development.env
-      - ./config/environments/.aws.env
     volumes:
       - ./services/api-rails:/app
     depends_on:
@@ -36,6 +35,25 @@ services:
     tty: true
   #   to run with byebug:
   #   docker-compose up -d && docker attach groundzero_api-rails_1
+  lambda-ruby:
+    build:
+      context: .
+      dockerfile: ./config/dockerfiles/Dockerfile-lambda-ruby
+      args:
+        APP_PATH: ./services/lambda-ruby
+    ports:
+      - '3001:8888'
+    env_file:
+      - ./config/environments/.aws.env
+    volumes:
+      - ./services/lambda-ruby:/app
+    depends_on:
+      - db-postgres
+    command: bundle exec jets server --host 0.0.0.0
+    stdin_open: true
+    tty: true
+  #   to run with byebug:
+  #   docker-compose up -d && docker attach famoustabiapp_api-rails_1
   db-postgres:
     image: postgres:12
     restart: always

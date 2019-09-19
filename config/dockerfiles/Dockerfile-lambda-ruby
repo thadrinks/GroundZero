@@ -1,40 +1,33 @@
-FROM lambci/lambda:ruby2.5
+# rails new famoustabi --skip-yarn --skip-git --skip-action-cable --skip-coffee --skip-turbolinks --skip-test --skip-system-test --api
+# jets new demo --mode api --database=postgresql
+
 FROM ruby:2.5.0
 
+RUN apt-get update -qq && apt-get install -y build-essential nodejs vim sudo
+RUN apt-get install -y rsync yarn unzip zip # needed for jets
+
 # required to be passed in
-ARG SERVICE_PATH
 ARG APP_PATH
-ARG INSTALL_PATH=/ruby
-ARG LOCAL_USER=ruby
 
-# Install Nodejs
-RUN curl -sL https://deb.nodesource.com/setup_9.x | bash -
-RUN apt-get install -y nodejs
+ARG INSTALL_PATH=/app
+ARG LOCAL_USER=rails
 
-# Install Serverless
-RUN npm i -g serverless@1.34.1
+# Create a directory where our app will be placed
+RUN mkdir -p $INSTALL_PATH
 
-# Install python
-RUN apt-get install -y -qq python-pip
-
-# Install AWS SAM CLI
-ENV PATH=$PATH:/root/.local/bin
-RUN pip install --user aws-sam-cli
-
-# Comment out when starting a new project
-COPY $SERVICE_PATH/package.json $INSTALL_PATH/package.json
-COPY $SERVICE_PATH/package-lock.json $INSTALL_PATH/package-lock.json
-
+# Change directory so that our commands run inside this new directory
 WORKDIR $INSTALL_PATH
-RUN npm install
 
-# copy project to container
-COPY $SERVICE_PATH/. $INSTALL_PATH/.
+RUN gem install jets --no-ri --no-rdoc
 
-# Install global packages with local user
-RUN useradd -ms /bin/bash $LOCAL_USER
-RUN usermod -aG sudo $LOCAL_USER
-# can't set user... SAM: Got permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get http://%2Fvar%2Frun%2Fdocker.sock/_ping: dial unix /var/run/docker.sock: connect: permission denied
-#USER $LOCAL_USER
+COPY $APP_PATH/Gemfile .
+COPY $APP_PATH/Gemfile.lock .
+RUN bundle install
 
-CMD ["npm", "start"]
+# Create local user
+RUN useradd -m $LOCAL_USER && echo "${LOCAL_USER}:${LOCAL_USER}" | chpasswd && adduser $LOCAL_USER sudo
+USER $LOCAL_USER
+
+COPY . $INSTALL_PATH
+
+CMD ["bundle", "exec", "jets", "server"]
