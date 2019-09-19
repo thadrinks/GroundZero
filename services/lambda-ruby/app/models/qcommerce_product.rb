@@ -1,0 +1,3 @@
+class QcommerceProduct < ApplicationRecord
+
+end
